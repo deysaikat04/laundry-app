@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./OrderPage.css";
 import Navbar from "../../component/Navbar/Navbar";
@@ -8,9 +9,12 @@ import Grid from "@mui/material/Grid";
 import Container from "@mui/material/Container";
 import Button from "@mui/joy/Button";
 
-import { FETCH_ALL_PRODUCT_URL } from "../../constants";
+import { FETCH_ALL_PRODUCT_URL, USER_SAVE_ORDER_URL } from "../../constants";
+import SuccessModal from "../../component/Modal/SuccessModal";
 
 export default function OrderPage() {
+  const navigate = useNavigate();
+
   const [products, setProducts] = useState([]);
   const [error, setError] = useState({});
 
@@ -28,6 +32,7 @@ export default function OrderPage() {
   });
 
   const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
+  const [successModalOpen, setSuccessModalOpen] = useState(false);
 
   const createCheckBoxState = (data) => {
     let checkbox = {};
@@ -41,6 +46,11 @@ export default function OrderPage() {
     });
     setOperationChecks(checkbox);
   };
+
+  useEffect(() => {
+    const auth = sessionStorage.getItem("auth");
+    if (!auth) navigate("/");
+  }, []);
 
   useEffect(() => {
     const url = `${process.env.REACT_APP_API_BASE_URL}${FETCH_ALL_PRODUCT_URL}`;
@@ -200,7 +210,26 @@ export default function OrderPage() {
         pincode: shippingDetails.pincode,
       };
 
-      console.log("finalPayload", finalPayload);
+      axios
+        .post(
+          `${process.env.REACT_APP_API_BASE_URL}${USER_SAVE_ORDER_URL}`,
+          finalPayload
+        )
+        .then(() => {
+          setError({
+            ...error,
+            saveOrder: "",
+          });
+          setConfirmationModalOpen(false);
+          setSuccessModalOpen(true);
+        })
+        .catch((error) => {
+          setError({
+            ...error,
+            saveOrder: "Failed while saving order!!",
+          });
+          console.error(error);
+        });
     }
   };
 
@@ -301,6 +330,11 @@ export default function OrderPage() {
         shippingDetails={shippingDetails}
         handleShippingDetails={handleShippingDetails}
         handlePlaceOrder={handlePlaceOrder}
+      />
+      <SuccessModal
+        successModalOpen={successModalOpen}
+        setSuccessModalOpen={setSuccessModalOpen}
+        reset={reset}
       />
     </>
   );

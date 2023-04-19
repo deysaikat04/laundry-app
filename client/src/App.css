@@ -39,6 +39,9 @@
 .center{
   justify-content: center;
 }
+.w-100 {
+  width: 100%;
+}
 .ml-4{
   margin-left: 4px !important;
 }

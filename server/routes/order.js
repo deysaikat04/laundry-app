@@ -54,18 +54,55 @@ router.get("/user/:userId", async (req, res) => {
     if (!userId) {
       return res.status(400).json({ error: "No order id provided" });
     }
-    const orders = await Order.find({ userId }).select({
-      _id: 0,
-      userId: 1,
-      orderedItems: 1,
-      totalItem: 1,
-      statusOfOrder: 1,
-      totalOrderPrice: 1,
-    });
+    const orders = await Order.find({ userId })
+      .select({
+        _id: 1,
+        userId: 1,
+        orderedItems: 1,
+        totalItem: 1,
+        statusOfOrder: 1,
+        totalOrderPrice: 1,
+        dateOfOrder: 1,
+        shippingAddress: 1,
+        pincode: 1,
+      })
+      .sort({ dateOfOrder: -1 });
     res.status(200).json(orders);
   } catch (err) {
     console.log(err);
     return res.status(500).json({ error: "error occer" });
+  }
+});
+
+router.patch("/user/:userId", async (req, res) => {
+  const { orderId } = req.body;
+  const { userId } = req.params;
+  if (!orderId || !userId) {
+    return res.status(400).json({ error: "Insufficient data!!" });
+  }
+  try {
+    const orders = await Order.updateOne(
+      { _id: orderId, userId },
+      {
+        $set: {
+          statusOfOrder: 0,
+        },
+      }
+    );
+    if (orders.modifiedCount && orders.matchedCount) {
+      return res.status(200).json({
+        success: true,
+        message: "Order updated successfully",
+      });
+    } else {
+      return res.status(200).json({
+        success: false,
+        message: "Unable to update order!!",
+      });
+    }
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ error: "Server error" });
   }
 });
 

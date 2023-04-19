@@ -7,19 +7,20 @@ const NavbarComponent = () => {
     <>
       <div className="navcont">
         <div>
-        <span>LAUNDRY</span>
+          <span>LAUNDRY</span>
         </div>
         <div>
           <nav>
             <ul>
               <li>
-                <Link  id="li">Home</Link>
+                <Link id="li" to={"/make-order"}>
+                  Create order
+                </Link>
               </li>
               <li>
-                <Link id="li">Pricing</Link>
-              </li>
-              <li>
-                <Link id="li">Career</Link>
+                <Link id="li" to={"/view-order"}>
+                  View order
+                </Link>
               </li>
               <li>
                 <Link id="li">Sign In</Link>
