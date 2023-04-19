@@ -62,10 +62,6 @@ export default function OrderConfirmationModal({
           >
             Confirm order
           </Typography>
-          {/* <Typography id="modal-desc" textColor="text.tertiary">
-            Make sure to use <code>aria-labelledby</code> on the modal dialog
-            with an optional <code>aria-describedby</code> attribute.
-          </Typography> */}
           <Sheet className="modal-inner">
             <Container maxWidth="lg" sx={{ p: 2 }}>
               <Grid container spacing={1}>
@@ -96,7 +92,7 @@ export default function OrderConfirmationModal({
                       >
                         <ul className="wash-type-list">
                           {item.typeOfWash.map((type) => (
-                            <li>{type}</li>
+                            <li key={type}>{type}</li>
                           ))}
                         </ul>
                       </Grid>

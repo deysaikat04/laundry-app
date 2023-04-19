@@ -6,8 +6,9 @@ import Grid from "@mui/material/Grid";
 import Container from "@mui/material/Container";
 import Table from "@mui/joy/Table";
 import Chip from "@mui/joy/Chip";
+import Button from "@mui/joy/Button";
 
-import { USER_FETCH_ORDER_URL } from "../../constants";
+import { USER_ORDER_URL } from "../../constants";
 
 export default function OrderListPage() {
   const navigate = useNavigate();
@@ -25,7 +26,7 @@ export default function OrderListPage() {
 
   useEffect(() => {
     if (user.id) {
-      const url = `${process.env.REACT_APP_API_BASE_URL}${USER_FETCH_ORDER_URL}/${user.id}`;
+      const url = `${process.env.REACT_APP_API_BASE_URL}${USER_ORDER_URL}/${user.id}`;
       axios
         .get(url)
         .then((response) => {
@@ -38,22 +39,32 @@ export default function OrderListPage() {
     }
   }, [user.id]);
 
+  function handleCancelOrder(orderId) {
+    if (orderId) {
+      const url = `${process.env.REACT_APP_API_BASE_URL}${USER_ORDER_URL}/${user.id}`;
+      axios
+        .patch(url, {
+          orderId,
+        })
+        .then((response) => {
+          setOrderList(response.data.data);
+          setError({ ...error, fetch_order: "" });
+        })
+        .catch((errorResponse) =>
+          setError({ ...error, fetch_order: errorResponse })
+        );
+    }
+  }
+
   return (
     <>
       <Navbar />
 
-      <Container
-        //  sx={{ py: 8 }}
-        maxWidth="lg"
-      >
+      <Container maxWidth="lg">
         <Grid item xs={12} sm={12} md={12}>
           <p className="main-header">Order list</p>
         </Grid>
-        {/* End hero unit */}
-        <Grid
-          container
-          //  spacing={4}
-        >
+        <Grid container>
           <Table aria-label="basic table">
             <thead>
               <tr>
@@ -64,6 +75,7 @@ export default function OrderListPage() {
                 <th>Address</th>
                 <th>Status</th>
                 <th>Total&nbsp;(₹)</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
@@ -98,7 +110,6 @@ export default function OrderListPage() {
                         </Fragment>
                       ))}
                     </td>
-
                     <td>{singleOrder.totalItem}</td>
                     <td>
                       {new Date(
@@ -119,6 +130,17 @@ export default function OrderListPage() {
                       </Chip>
                     </td>
                     <td>{singleOrder.totalOrderPrice}</td>
+                    <td>
+                      <Button
+                        size="sm"
+                        variant="outlined"
+                        color="danger"
+                        onClick={() => handleCancelOrder(singleOrder._id)}
+                        disabled={!singleOrder.statusOfOrder}
+                      >
+                        Cancel
+                      </Button>
+                    </td>
                   </tr>
                 ))
               ) : (

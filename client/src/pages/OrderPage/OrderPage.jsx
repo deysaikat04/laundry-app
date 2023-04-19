@@ -170,7 +170,7 @@ export default function OrderPage() {
 
   function refreshItem(selectedItem) {
     if (quantity[selectedItem]) {
-      let localQty = quantity;
+      let localQty = { ...quantity };
       delete localQty[selectedItem];
       setQuantity(localQty);
 
@@ -180,7 +180,11 @@ export default function OrderPage() {
 
       setOrderedItems(localOrderedItems);
     }
-    createCheckBoxState(products);
+    let operationChecksLocal = { ...operationChecks };
+    for (let item in operationChecksLocal[selectedItem]) {
+      operationChecksLocal[selectedItem][item] = false;
+    }
+    setOperationChecks(operationChecksLocal);
   }
 
   const handleShippingDetails = (e) => {
@@ -313,7 +317,7 @@ export default function OrderPage() {
                 <Button
                   size="md"
                   onClick={() => setConfirmationModalOpen(true)}
-                  disabled={!orderedItems.length}
+                  disabled={orderTotal.totalPrice === 0}
                 >
                   Place order
                 </Button>
